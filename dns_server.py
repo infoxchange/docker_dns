@@ -18,7 +18,7 @@ def dict_lookup(dic, key_path, default=None):
 
 class DockerMapping(object):
     """
-    Look up docker container records
+    Look up docker container data
     """
 
     id_re = re.compile('([a-z0-9]+)\.docker')
@@ -37,7 +37,7 @@ class DockerMapping(object):
         except KeyError:
             return False
 
-    def ids_from_prop(self, key_path, value):
+    def _ids_from_prop(self, key_path, value):
         return (
             c['ID']
             for c in (
@@ -54,7 +54,7 @@ class DockerMapping(object):
         if match:
             container_id = match.group(1)
         else:
-            ids = self.ids_from_prop(('Config', 'Hostname'), unicode(name))
+            ids = self._ids_from_prop(('Config', 'Hostname'), unicode(name))
             try:
                 container_id = ids.next()
             except StopIteration:
