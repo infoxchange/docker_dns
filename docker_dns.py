@@ -103,6 +103,7 @@ class DockerMapping(object):
             container_id = match.group(1)
         else:
             ids = self._ids_from_prop(('Config', 'Hostname'), unicode(name))
+            # FIXME Should be able to support multiple
             try:
                 container_id = ids.next()
             except StopIteration:
@@ -205,5 +206,3 @@ ret.setServiceParent(service.IServiceCollection(application))
 if __name__ == '__main__':
     import sys
     print "Usage: twistd -y %s" % sys.argv[0]
-else:
-    print __name__
