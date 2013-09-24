@@ -1,5 +1,14 @@
 #!/usr/bin/python
 
+"""
+Tests for Docker DNS
+
+Author: Ricky Cook <ricky@infoxchange.net.au>
+"""
+
+# Do not care......
+# pylint:disable=missing-docstring,too-many-public-methods,protected-access,invalid-name
+
 import docker, fudge, itertools, unittest
 from docker_dns import dict_lookup, DockerMapping, DockerResolver
 from twisted.names import dns
@@ -16,15 +25,15 @@ def in_generator(gen, val):
 
 
 def check_record(record, **kwargs):
-        for k in kwargs:
-            real_value = getattr(record, k)
-            if k is 'name':
-                real_value = real_value.name
+    for k in kwargs:
+        real_value = getattr(record, k)
+        if k is 'name':
+            real_value = real_value.name
 
-            if real_value != kwargs[k]:
-                return False
+        if real_value != kwargs[k]:
+            return False
 
-        return True
+    return True
 
 
 class MockDockerClient(object):
@@ -71,6 +80,8 @@ class MockDockerClient(object):
         {'Id': 'cidsloths'},
     ]
 
+    inspect_container_id = None
+
     def inspect_container(self, cid):
         self.inspect_container_id = cid
 
@@ -83,7 +94,7 @@ class MockDockerClient(object):
             exception = docker.client.APIError('bad', response)
             raise exception
 
-    def containers(self, *args, **kwargs):
+    def containers(self, *args, **kwargs): # pylint:disable=unused-argument
         return self.containers_return
 
 

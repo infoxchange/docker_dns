@@ -20,7 +20,7 @@ import docker, re
 from requests.exceptions import ConnectionError
 from twisted.application import internet, service
 from twisted.internet import defer
-from twisted.names import cache, client, common, dns, server
+from twisted.names import common, dns, server
 from twisted.names.error import DomainError
 from twisted.python import failure
 from warnings import warn
@@ -54,15 +54,15 @@ class DockerMapping(object):
     Look up docker container data
     """
 
-    id_re = re.compile('([a-z0-9]+)\.docker')
+    id_re = re.compile(r'([a-z0-9]+)\.docker')
 
-    def __init__(self, client):
+    def __init__(self, api):
         """
         Args:
-            client: Docker Client instance used to do Docker communication
+            api: Docker Client instance used to do API communication
         """
 
-        self.client = client
+        self.api = api
 
     def _ids_from_prop(self, key_path, value):
         """
@@ -80,8 +80,8 @@ class DockerMapping(object):
         return (
             c['ID']
             for c in (
-                self.client.inspect_container(c_lite['Id'])
-                for c_lite in self.client.containers(all=True)
+                self.api.inspect_container(c_lite['Id'])
+                for c_lite in self.api.containers(all=True)
             )
             if dict_lookup(c, key_path, None) == value
             if 'ID' in c
@@ -111,7 +111,7 @@ class DockerMapping(object):
                 return None
 
         try:
-            return self.client.inspect_container(container_id)
+            return self.api.inspect_container(container_id)
 
         except docker.client.APIError as ex:
             # 404 is valid, others aren't
@@ -148,6 +148,7 @@ class DockerMapping(object):
         return addr
 
 
+# pylint:disable=too-many-public-methods
 class DockerResolver(common.ResolverBase):
     """
     DNS resolver to resolve queries with a DockerMapping instance.
@@ -190,29 +191,37 @@ class DockerResolver(common.ResolverBase):
         try:
             records = self._a_records(name)
             return defer.succeed((records, (), ()))
-        except:
+
+        # We need to catch everything. Uncaught exceptian will make the server
+        # stop responding
+        except: # pylint:disable=bare-except
             return defer.fail(failure.Failure(dns.DomainError(name)))
 
+def main():
+    """
+    Set everything up
+    """
+    # Create our custom mapping and resolver
+    mapping = DockerMapping(docker.Client())
+    resolver = DockerResolver(mapping)
 
-application = service.Application('dnsserver', 1, 1)
+    # Create twistd stuff to tie in our custom components
+    factory = server.DNSServerFactory(clients=[resolver])
+    proto = dns.DNSDatagramProtocol(factory)
+    factory.noisy = proto.noisy = False
 
-# Create our custom mapping and resolver
-mapping = DockerMapping(docker.Client())
-resolver = DockerResolver(mapping)
+    # Register the service
+    ret = service.MultiService()
+    bind_list = [(internet.TCPServer, factory), (internet.UDPServer, proto)] # pylint:disable=no-member
+    for (klass, arg) in bind_list:
+        svc = klass(53, arg)
+        svc.setServiceParent(ret)
 
-# Create twistd stuff to tie in our custom components
-factory = server.DNSServerFactory(clients=[resolver])
-proto = dns.DNSDatagramProtocol(factory)
-factory.noisy = proto.noisy = False
+    # DO IT NOW
+    ret.setServiceParent(service.IServiceCollection(application))
 
-# Register the service
-ret = service.MultiService()
-for (klass, arg) in [(internet.TCPServer, factory), (internet.UDPServer, proto)]:
-    s = klass(53, arg)
-    s.setServiceParent(ret)
-
-# DO IT NOW
-ret.setServiceParent(service.IServiceCollection(application))
+application = service.Application('dnsserver', 1, 1) # pylint:disable=invalid-name
+main()
 
 
 # Doin' it wrong
