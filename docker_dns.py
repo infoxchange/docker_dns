@@ -140,6 +140,10 @@ class DockerMapping(object):
             return None
 
         addr = container['NetworkSettings']['IPAddress']
+
+        if addr is '':
+            return None
+
         return addr
 
 
@@ -173,6 +177,9 @@ class DockerResolver(common.ResolverBase):
         """
 
         addr = self.mapping.get_a(name)
+        if not addr:
+            return ()
+
         return tuple([
             dns.RRHeader(name, dns.A, dns.IN, self.ttl,
                          dns.Record_A(addr, self.ttl))

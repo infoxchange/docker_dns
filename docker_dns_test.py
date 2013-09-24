@@ -2,6 +2,7 @@
 
 import docker, fudge, itertools, unittest
 from docker_dns import dict_lookup, DockerMapping, DockerResolver
+from twisted.names import dns
 
 # FIXME I can not believe how disgusting this is
 def in_generator(gen, val):
@@ -10,6 +11,18 @@ def in_generator(gen, val):
         gen,
         False
     )
+
+
+def check_record(record, **kwargs):
+        for k in kwargs:
+            real_value = getattr(record, k)
+            if k is 'name':
+                real_value = real_value.name
+
+            if real_value != kwargs[k]:
+                return False
+
+        return True
 
 
 class MockDockerClient(object):
@@ -33,15 +46,27 @@ class MockDockerClient(object):
             'IPAddress': '8.8.8.8'
         }
     }
+    inspect_container_sloths = {
+        'ID': 'cidslothslong',
+        'Config': {
+            'Hostname': 'stopped-sloths',
+        },
+        'NetworkSettings': {
+            'IPAddress': ''
+        }
+    }
     inspect_container_returns = {
         'cidpandas': inspect_container_pandas,
         'cidpandaslong': inspect_container_pandas,
         'cidfoxes': inspect_container_foxes,
         'cidfoxeslong': inspect_container_foxes,
+        'cidsloths': inspect_container_sloths,
+        'cidslothslong': inspect_container_sloths,
     }
     containers_return = [
         {'Id': 'cidpandas'},
         {'Id': 'cidfoxes'},
+        {'Id': 'cidsloths'},
     ]
 
     def inspect_container(self, cid):
@@ -255,6 +280,48 @@ class DockerMappingTest(unittest.TestCase):
         )
 
 
+class DockerResolverTest(unittest.TestCase):
+
+    def setUp(self):
+        self.client   = MockDockerClient()
+        self.mapping  = DockerMapping(self.client)
+        self.resolver = DockerResolver(self.mapping)
+
+    def test__a_records_hostname(self):
+        rec = self.resolver._a_records('sneaky-foxes')
+        self.assertEqual(len(rec), 1)
+
+        rec = rec[0]
+        self.assertTrue(check_record(
+            rec,
+            name='sneaky-foxes',
+            type=dns.A,
+        ))
+        self.assertEqual(rec.payload.dottedQuad(), '8.8.8.8')
+
+    def test__a_records_id(self):
+        rec = self.resolver._a_records('cidpandas.docker')
+        self.assertEqual(len(rec), 1)
+
+        rec = rec[0]
+        self.assertTrue(check_record(
+            rec,
+            name='cidpandas.docker',
+            type=dns.A,
+        ))
+        self.assertEqual(rec.payload.dottedQuad(), '127.0.0.1')
+
+    def test__a_records_shutdown(self):
+        rec = self.resolver._a_records('cidsloths.docker')
+        self.assertEqual(len(rec), 0)
+
+    def test__a_records_invalid(self):
+        rec = self.resolver._a_records('invalid.docker')
+        self.assertEqual(len(rec), 0)
+
+    def test__a_records_blank_query(self):
+        rec = self.resolver._a_records('')
+        self.assertEqual(len(rec), 0)
 
 
 def main():
