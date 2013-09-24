@@ -42,7 +42,7 @@ def dict_lookup(dic, key_path, default=None):
 
     for k in key_path:
         if k in dic:
-            dic = dic.get(k, default)
+            dic = dic[k]
         else:
             return default
     return dic
