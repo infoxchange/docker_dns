@@ -86,5 +86,6 @@ include reasonable test coverage.
 
 To run:
 
+ - `pip install -r test_requirements.txt --use-mirrors`
  - `pylint --rcfile=pylint.conf *.py`
  - `pep8 *.py`
