@@ -7,6 +7,7 @@ from twisted.application import internet, service
 from twisted.internet import defer
 from twisted.names import cache, client, common, dns, server
 from twisted.python import failure
+from warnings import warn
 
 def dict_lookup(dic, key_path, default=None):
     for k in key_path:
@@ -27,7 +28,12 @@ class DockerMapping(object):
         self.client = client
 
     def __contains__(self, name):
-        c = self.get_container(name)
+        try:
+            c = self.get_container(name)
+        except:
+            # Catch all is bad, but this MUST return
+            return False
+
         if not c:
             return False
 
@@ -62,11 +68,16 @@ class DockerMapping(object):
 
         try:
             return self.client.inspect_container(container_id)
+
         except docker.client.APIError as ex:
-            print ex
+            # 404 is valid, others aren't
+            if not ex.response.status_code == 404:
+                warn(ex)
+
             return None
+
         except ConnectionError as ex:
-            print ex
+            warn(ex)
             return None
 
     def get_a(self, name):
