@@ -149,7 +149,10 @@ class DockerResolver(common.ResolverBase):
         """
 
         self.mapping = mapping
-        super(DockerResolver, self).__init__()
+
+        # Change to this ASAP when Twisted uses object base
+        # super(DockerResolver, self).__init__()
+        common.ResolverBase.__init__(self)
         self.ttl = 10
 
     def _aRecords(self, name):
@@ -177,7 +180,7 @@ class DockerResolver(common.ResolverBase):
             return defer.fail(failure.Failure(dns.DomainError(name)))
 
 
-app = service.Application('dnsserver', 1, 1)
+application = service.Application('dnsserver', 1, 1)
 
 # Create our custom mapping and resolver
 mapping = DockerMapping(docker.Client())
@@ -195,10 +198,12 @@ for (klass, arg) in [(internet.TCPServer, factory), (internet.UDPServer, proto)]
     s.setServiceParent(ret)
 
 # DO IT NOW
-ret.setServiceParent(service.IServiceCollection(app))
+ret.setServiceParent(service.IServiceCollection(application))
 
 
 # Doin' it wrong
 if __name__ == '__main__':
     import sys
     print "Usage: twistd -y %s" % sys.argv[0]
+else:
+    print __name__
