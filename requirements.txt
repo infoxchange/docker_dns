@@ -1,0 +1,5 @@
+Twisted-Names==12.0.0
+fudge==1.0.3
+pep8==1.4.6
+pylint==1.0.0
+-e git+git://github.com/dotcloud/docker-py.git#egg=docker
