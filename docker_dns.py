@@ -139,7 +139,7 @@ class DockerMapping(object):
 
         except docker.client.APIError as ex:
             # 404 is valid, others aren't
-            if not ex.response.status_code == 404:
+            if ex.response.status_code != 404:
                 warn(ex)
 
             return None
