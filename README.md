@@ -29,32 +29,35 @@ For these examples, we have Docker containers like this:
  - IP: 172.17.0.3
  - Hostname: my-thing
 
-
-And here are the commands and answers:
+Container IDs are variable length. They can be long:
 
     dig @localhost 0949efde23bf017.docker +noall +answer
     0949efde23bf017.docker.	10	IN	A	172.17.0.2
 
+Or they can be short:
 
     dig @localhost 0949.docker +noall +answer
     0949.docker.		10	IN	A	172.17.0.2
 
+And the other container:
 
     dig @localhost 26ed50b1bf59.docker +noall +answer
     26ed50b1bf59.docker.	10	IN	A	172.17.0.3
 
+When a container doesn't exist, no answer is given:
 
     dig @localhost nothing.docker +noall +answer
-(no answer given)
 
+You can look up by hostname be removing the .docker TLD:
 
     dig @localhost 0949efde23bf +noall +answer
     0949efde23bf.		10	IN	A	172.17.0.2
 
+Here's a manually defined hostname:
 
     dig @localhost my-thing +noall +answer
     my-thing.		10	IN	A	172.17.0.3
 
+And the host name that would have been automatically assigned for the above container:
 
     dig @localhost 26ed50b1bf59 +noall +answer
-(no answer given)
