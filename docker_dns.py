@@ -161,7 +161,7 @@ class DockerResolver(common.ResolverBase):
         common.ResolverBase.__init__(self)
         self.ttl = 10
 
-    def _aRecords(self, name):
+    def _a_records(self, name):
         """
         Get A records from a query name
 
@@ -180,7 +180,7 @@ class DockerResolver(common.ResolverBase):
 
     def lookupAddress(self, name, timeout = None):
         try:
-            records = self._aRecords(name)
+            records = self._a_records(name)
             return defer.succeed((records, (), ()))
         except:
             return defer.fail(failure.Failure(dns.DomainError(name)))
