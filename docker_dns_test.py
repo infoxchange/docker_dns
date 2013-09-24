@@ -343,6 +343,18 @@ class DockerResolverTest(unittest.TestCase):
     def test_lookupAddress_id(self):
         deferred = self.resolver.lookupAddress('cidfoxes.docker')
         self.assertFalse(isinstance(deferred.result, Failure))
+        self.assertEqual(len(deferred.result), 3)
+        self.assertEqual(deferred.result[1], ())
+        self.assertEqual(deferred.result[2], ())
+        self.assertEqual(len(deferred.result[0]), 1)
+
+        rec = deferred.result[0][0]
+        self.assertTrue(check_record(
+            rec,
+            name='cidfoxes.docker',
+            type=dns.A,
+        ))
+        self.assertEqual(rec.payload.dottedQuad(), '8.8.8.8')
 
     def test_lookupAddress_invalid(self):
         deferred = self.resolver.lookupAddress('invalid')
