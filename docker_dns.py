@@ -134,7 +134,12 @@ class DockerMapping(object):
             IPv4 address for the query name given
         """
 
-        addr = self.lookup_container(name)['NetworkSettings']['IPAddress']
+        container = self.lookup_container(name)
+
+        if container is None:
+            return None
+
+        addr = container['NetworkSettings']['IPAddress']
         return addr
 
 

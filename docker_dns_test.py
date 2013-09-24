@@ -39,8 +39,6 @@ class MockDockerClient(object):
         'cidfoxes': inspect_container_foxes,
         'cidfoxeslong': inspect_container_foxes,
     }
-
-
     containers_return = [
         {'Id': 'cidpandas'},
         {'Id': 'cidfoxes'},
@@ -245,10 +243,16 @@ class DockerMappingTest(unittest.TestCase):
         )
 
     def test_get_a_hostname_none(self):
-        pass
+        self.assertEqual(
+            self.mapping.get_a('invalid'),
+            None
+        )
 
     def test_get_a_id_none(self):
-        pass
+        self.assertEqual(
+            self.mapping.get_a('invalid.docker'),
+            None
+        )
 
 
 
