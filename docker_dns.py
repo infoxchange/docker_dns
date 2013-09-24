@@ -63,32 +63,6 @@ class DockerMapping(object):
 
         self.client = client
 
-    def __contains__(self, name):
-        """
-        Check to see if we have a container matching the query name
-
-        Args:
-            name: DNS query name to look up
-
-        Returns:
-            True if the query finds 1 or more containers, False otherwise
-        """
-
-        try:
-            c = self.lookup_container(name)
-        except:
-            # Catch all is bad, but this MUST return
-            return False
-
-        if not c:
-            return False
-
-        try:
-            c['NetworkSettings']['IPAddress']
-            return True
-        except KeyError:
-            return False
-
     def _ids_from_prop(self, key_path, value):
         """
         Get IDs of containers where their config matches a value
@@ -196,9 +170,10 @@ class DockerResolver(common.ResolverBase):
         ])
 
     def lookupAddress(self, name, timeout = None):
-        if name in self.mapping:
-            return defer.succeed((self._aRecords(name), (), ()))
-        else:
+        try:
+            records = self._aRecords(name)
+            return defer.succeed((records, (), ()))
+        except:
             return defer.fail(failure.Failure(dns.DomainError(name)))
 
 
