@@ -175,7 +175,7 @@ class DockerResolver(common.ResolverBase):
         """
 
         self.mapping = mapping
-        common.ResolverBase.__init__(self)
+        super(DockerResolver, self).__init__()
         self.ttl = 10
 
     def _aRecords(self, name):
