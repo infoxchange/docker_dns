@@ -61,7 +61,7 @@ When a container doesn't exist, no answer is given:
 
     dig @localhost nothing.docker +noall +answer
 
-You can look up by hostname be removing the .docker TLD:
+You can look up by hostname by removing the .docker TLD:
 
     dig @localhost 0949efde23bf +noall +answer
     0949efde23bf.		10	IN	A	172.17.0.2
