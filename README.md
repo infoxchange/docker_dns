@@ -13,15 +13,20 @@ Install/Run
 -----------
 On Debian, installation is easy
 
- - Install docker-py: `pip install git+git://github.com/dotcloud/docker-py.git#egg=docker`
- - Install twisted names: `apt-get install python-twisted-names` or `pip install twisted`
- - For testing, you will also need Fudge: `apt-get install python-fudge` or `pip install fudge`
+ - Install docker-py:
+   `pip install git+git://github.com/dotcloud/docker-py.git#egg=docker`
+ - Install twisted names: `apt-get install python-twisted-names` or
+   `pip install twisted`
+ - For testing, you will also need Fudge: `apt-get install python-fudge` or
+   `pip install fudge`
 
 That's it! To run, just
 
     twistd -y docker_dns.py
 
-This will start a DNS server on port 53 (default DNS port). To make this useful, you probably want to combine it with your regular DNS in something like Dnsmasq.
+This will start a DNS server on port 53 (default DNS port). To make this
+useful, you probably want to combine it with your regular DNS in something like
+Dnsmasq.
 
 Examples
 --------
@@ -72,13 +77,15 @@ Here's a manually defined hostname:
     dig @localhost my-thing +noall +answer
     my-thing.		10	IN	A	172.17.0.3
 
-And the host name that would have been automatically assigned for the above container:
+And the host name that would have been automatically assigned for the above
+container:
 
     dig @localhost 26ed50b1bf59 +noall +answer
 
 Contributing
 ------------
-All pull requests should 10/10 in pylint and have no PEP8 warnings.
+All pull requests should 10/10 in pylint, have no PEP8 warnings and should
+include reasonable test coverage.
 
 To run:
 
