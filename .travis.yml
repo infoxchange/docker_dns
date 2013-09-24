@@ -4,7 +4,8 @@ python:
 install:
   - pip install -q -r requirements.txt --use-mirrors
   - pip install -q -r test_requirements.txt --use-mirrors
-script:
+before_script:
   - pep8 *.py
   - pylint --rcfile=pylint.conf *.py
+script:
   - ./docker_dns_test.py
