@@ -39,6 +39,8 @@ class MockDockerClient(object):
         'cidfoxes': inspect_container_foxes,
         'cidfoxeslong': inspect_container_foxes,
     }
+
+
     containers_return = [
         {'Id': 'cidpandas'},
         {'Id': 'cidfoxes'},
@@ -157,6 +159,9 @@ class DockerMappingTest(unittest.TestCase):
         self.client  = MockDockerClient()
         self.mapping = DockerMapping(self.client)
 
+    #
+    # TEST _ids_from_prop
+    #
     def test__ids_from_prop_single_depth(self):
         ids_gen1, ids_gen2 = itertools.tee(
             self.mapping._ids_from_prop(
@@ -195,6 +200,9 @@ class DockerMappingTest(unittest.TestCase):
         self.assertTrue(in_generator(ids_gen2, 'cidpandaslong'))
         self.assertTrue(in_generator(ids_gen3, 'cidfoxeslong'))
 
+    #
+    # TEST lookup_container
+    #
     def test_lookup_container_hostname(self):
         self.assertEqual(
             self.mapping.lookup_container('cuddly-pandas'),
@@ -220,6 +228,29 @@ class DockerMappingTest(unittest.TestCase):
             self.mapping.lookup_container('invalid.docker'),
             None
         )
+
+    #
+    # TEST get_a
+    #
+    def test_get_a_hostname(self):
+        self.assertEqual(
+            self.mapping.get_a('sneaky-foxes'),
+            '8.8.8.8'
+        )
+
+    def test_get_a_id(self):
+        self.assertEqual(
+            self.mapping.get_a('cidpandas.docker'),
+            '127.0.0.1'
+        )
+
+    def test_get_a_hostname_none(self):
+        pass
+
+    def test_get_a_id_none(self):
+        pass
+
+
 
 
 def main():
