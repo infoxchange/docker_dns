@@ -78,7 +78,7 @@ And the host name that would have been automatically assigned for the above cont
 
 Contributing
 ------------
-All pull requests should 10/10 in pylint and no warnings from PEP8.
+All pull requests should 10/10 in pylint and have no PEP8 warnings.
 
 To run:
 
