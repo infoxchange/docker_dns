@@ -75,3 +75,12 @@ Here's a manually defined hostname:
 And the host name that would have been automatically assigned for the above container:
 
     dig @localhost 26ed50b1bf59 +noall +answer
+
+Contributing
+------------
+All pull requests must 10/10 in pylint and no warnings from PEP8.
+
+To run:
+
+ - `pylint --rcfile=pylint.conf *.py`
+ - `pep8 *.py`
