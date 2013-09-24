@@ -21,6 +21,7 @@ from requests.exceptions import ConnectionError
 from twisted.application import internet, service
 from twisted.internet import defer
 from twisted.names import cache, client, common, dns, server
+from twisted.names.error import DomainError
 from twisted.python import failure
 from warnings import warn
 
@@ -178,7 +179,7 @@ class DockerResolver(common.ResolverBase):
 
         addr = self.mapping.get_a(name)
         if not addr:
-            return ()
+            raise DomainError(name)
 
         return tuple([
             dns.RRHeader(name, dns.A, dns.IN, self.ttl,

@@ -3,6 +3,7 @@
 import docker, fudge, itertools, unittest
 from docker_dns import dict_lookup, DockerMapping, DockerResolver
 from twisted.names import dns
+from twisted.names.error import DomainError
 
 # FIXME I can not believe how disgusting this is
 def in_generator(gen, val):
@@ -312,16 +313,25 @@ class DockerResolverTest(unittest.TestCase):
         self.assertEqual(rec.payload.dottedQuad(), '127.0.0.1')
 
     def test__a_records_shutdown(self):
-        rec = self.resolver._a_records('cidsloths.docker')
-        self.assertEqual(len(rec), 0)
+        self.assertRaises(
+            DomainError,
+            self.resolver._a_records,
+            'cidsloths.docker'
+        )
 
     def test__a_records_invalid(self):
-        rec = self.resolver._a_records('invalid.docker')
-        self.assertEqual(len(rec), 0)
+        self.assertRaises(
+            DomainError,
+            self.resolver._a_records,
+            'invalid.docker'
+        )
 
     def test__a_records_blank_query(self):
-        rec = self.resolver._a_records('')
-        self.assertEqual(len(rec), 0)
+        self.assertRaises(
+            DomainError,
+            self.resolver._a_records,
+            ''
+        )
 
 
 def main():
