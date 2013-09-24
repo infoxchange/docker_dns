@@ -11,14 +11,10 @@ To look up a container:
 
 Install/Run
 -----------
-On Debian, installation is easy
 
- - Install docker-py:
-   `pip install git+git://github.com/dotcloud/docker-py.git#egg=docker`
- - Install twisted names: `apt-get install python-twisted-names` or
-   `pip install twisted`
- - For testing, you will also need Fudge: `apt-get install python-fudge` or
-   `pip install fudge`
+Just install from requirements (in a virtualenv if you'd like)
+
+   pip install -r requirements.txt --use-mirrors
 
 That's it! To run, just
 
