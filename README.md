@@ -1,13 +1,26 @@
 Docker DNS
 ==========
 
-A simple TwistD DNS server using custom TLD and Docker as the back end for IP
+A simple Twisted DNS server using custom TLD and Docker as the back end for IP
 resolution.
 
 To look up a container:
  - 'A' record query container's hostname with no TLD. Must be an exact match
  - 'A' record query an ID that will match a container with a docker inspect
    command with '.docker' as the TLD. eg: 0949efde23b.docker
+
+Install/Run
+-----------
+On Debian, installation is easy
+
+ - Install docker-py: `pip install git+git://github.com/dotcloud/docker-py.git#egg=docker`
+ - Install twisted names: `apt-get install python-twisted-names` or `pip install twisted`
+
+That's it! To run, just
+
+    twistd -y docker_dns.py
+
+This will start a DNS server on port 53 (default DNS port). To make this useful, you probably want to combine it with your regular DNS in something like Dnsmasq.
 
 Examples
 --------
