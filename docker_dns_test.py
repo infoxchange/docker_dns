@@ -4,6 +4,7 @@ import docker, fudge, itertools, unittest
 from docker_dns import dict_lookup, DockerMapping, DockerResolver
 from twisted.names import dns
 from twisted.names.error import DomainError
+from twisted.python.failure import Failure
 
 # FIXME I can not believe how disgusting this is
 def in_generator(gen, val):
@@ -288,6 +289,9 @@ class DockerResolverTest(unittest.TestCase):
         self.mapping  = DockerMapping(self.client)
         self.resolver = DockerResolver(self.mapping)
 
+    #
+    # TEST _a_records
+    #
     def test__a_records_hostname(self):
         rec = self.resolver._a_records('sneaky-foxes')
         self.assertEqual(len(rec), 1)
@@ -332,6 +336,17 @@ class DockerResolverTest(unittest.TestCase):
             self.resolver._a_records,
             ''
         )
+
+    #
+    # TEST lookupAddress
+    #
+    def test_lookupAddress_id(self):
+        deferred = self.resolver.lookupAddress('cidfoxes.docker')
+        self.assertFalse(isinstance(deferred.result, Failure))
+
+    def test_lookupAddress_invalid(self):
+        deferred = self.resolver.lookupAddress('invalid')
+        self.assertTrue(isinstance(deferred.result, Failure))
 
 
 def main():
