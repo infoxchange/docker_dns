@@ -1,5 +1,10 @@
 #!/usr/bin/python
 
+"""
+Code heavily modified from
+http://stackoverflow.com/a/4401671/509043
+"""
+
 import docker, re
 
 from requests.exceptions import ConnectionError
@@ -10,12 +15,17 @@ from twisted.python import failure
 from warnings import warn
 
 def dict_lookup(dic, key_path, default=None):
+    """
+    Look up value in a nested dict
+    """
+
     for k in key_path:
         if k in dic:
             dic = dic.get(k, default)
         else:
             return default
     return dic
+
 
 class DockerMapping(object):
     """
@@ -28,8 +38,12 @@ class DockerMapping(object):
         self.client = client
 
     def __contains__(self, name):
+        """
+        Check to see if we have a container matching the query name
+        """
+
         try:
-            c = self.get_container(name)
+            c = self.lookup_container(name)
         except:
             # Catch all is bad, but this MUST return
             return False
@@ -44,6 +58,10 @@ class DockerMapping(object):
             return False
 
     def _ids_from_prop(self, key_path, value):
+        """
+        Get IDs of containers where their config matches a value
+        """
+
         return (
             c['ID']
             for c in (
@@ -54,7 +72,11 @@ class DockerMapping(object):
             if 'ID' in c
         )
 
-    def get_container(self, name):
+    def lookup_container(self, name):
+        """
+        Gets the container config from a DNS lookup name, or returns None if
+        one could not be found
+        """
 
         match = self.id_re.match(name)
         if match:
@@ -81,7 +103,11 @@ class DockerMapping(object):
             return None
 
     def get_a(self, name):
-        addr = self.get_container(name)['NetworkSettings']['IPAddress']
+        """
+        Get an IPv4 address from a query name to be used in A record lookups
+        """
+
+        addr = self.lookup_container(name)['NetworkSettings']['IPAddress']
         return addr
 
 
@@ -96,6 +122,10 @@ class DockerResolver(common.ResolverBase):
         self.ttl = 10
 
     def _aRecords(self, name):
+        """
+        Get A records from a query name
+        """
+
         addr = self.mapping.get_a(name)
         return tuple([
             dns.RRHeader(name, dns.A, dns.IN, self.ttl,
@@ -109,31 +139,28 @@ class DockerResolver(common.ResolverBase):
             return defer.fail(failure.Failure(dns.DomainError(name)))
 
 
-application = service.Application('dnsserver', 1, 1)
+app = service.Application('dnsserver', 1, 1)
+
+# Create our custom mapping and resolver
 mapping = DockerMapping(docker.Client())
 resolver = DockerResolver(mapping)
 
+# Create twistd stuff to tie in our custom components
+factory = server.DNSServerFactory(clients=[resolver])
+proto = dns.DNSDatagramProtocol(factory)
+factory.noisy = proto.noisy = False
 
-# create the protocols
-f = server.DNSServerFactory(clients=[resolver])
-p = dns.DNSDatagramProtocol(f)
-f.noisy = p.noisy = False
-
-
-# register as tcp and udp
+# Register the service
 ret = service.MultiService()
-PORT=53
-
-for (klass, arg) in [(internet.TCPServer, f), (internet.UDPServer, p)]:
-    s = klass(PORT, arg)
+for (klass, arg) in [(internet.TCPServer, factory), (internet.UDPServer, proto)]:
+    s = klass(53, arg)
     s.setServiceParent(ret)
 
+# DO IT NOW
+ret.setServiceParent(service.IServiceCollection(app))
 
-# run all of the above as a twistd application
-ret.setServiceParent(service.IServiceCollection(application))
 
-
-# run it through twistd!
+# Doin' it wrong
 if __name__ == '__main__':
     import sys
     print "Usage: twistd -y %s" % sys.argv[0]
