@@ -30,6 +30,8 @@ For these examples, we have Docker containers like this:
  - Hostname: my-thing
 
 
+And here are the commands and answers:
+
     dig @localhost 0949efde23bf017.docker +noall +answer
     0949efde23bf017.docker.	10	IN	A	172.17.0.2
 
