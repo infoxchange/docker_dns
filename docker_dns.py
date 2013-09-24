@@ -15,7 +15,8 @@ http://stackoverflow.com/a/4401671/509043
 Author: Ricky Cook <ricky@infoxchange.net.au>
 """
 
-import docker, re
+import docker
+import re
 
 from requests.exceptions import ConnectionError
 from twisted.application import internet, service
@@ -187,15 +188,16 @@ class DockerResolver(common.ResolverBase):
                          dns.Record_A(addr, self.ttl))
         ])
 
-    def lookupAddress(self, name, timeout = None):
+    def lookupAddress(self, name, timeout=None):
         try:
             records = self._a_records(name)
             return defer.succeed((records, (), ()))
 
         # We need to catch everything. Uncaught exceptian will make the server
         # stop responding
-        except: # pylint:disable=bare-except
+        except:  # pylint:disable=bare-except
             return defer.fail(failure.Failure(dns.DomainError(name)))
+
 
 def main():
     """
@@ -212,7 +214,7 @@ def main():
 
     # Register the service
     ret = service.MultiService()
-    bind_list = [(internet.TCPServer, factory), (internet.UDPServer, proto)] # pylint:disable=no-member
+    bind_list = [(internet.TCPServer, factory), (internet.UDPServer, proto)]  # noqa pylint:disable=no-member
     for (klass, arg) in bind_list:
         svc = klass(53, arg)
         svc.setServiceParent(ret)
@@ -220,7 +222,7 @@ def main():
     # DO IT NOW
     ret.setServiceParent(service.IServiceCollection(application))
 
-application = service.Application('dnsserver', 1, 1) # pylint:disable=invalid-name
+application = service.Application('dnsserver', 1, 1)  # noqa pylint:disable=invalid-name
 main()
 
 

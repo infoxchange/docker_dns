@@ -7,18 +7,23 @@ Author: Ricky Cook <ricky@infoxchange.net.au>
 """
 
 # Do not care......
-# pylint:disable=missing-docstring,too-many-public-methods,protected-access,invalid-name
+# noqa pylint:disable=missing-docstring,too-many-public-methods,protected-access,invalid-name
 
-import docker, fudge, itertools, unittest
+import docker
+import fudge
+import itertools
+import unittest
+
 from docker_dns import dict_lookup, DockerMapping, DockerResolver
 from twisted.names import dns
 from twisted.names.error import DomainError
 from twisted.python.failure import Failure
 
+
 # FIXME I can not believe how disgusting this is
 def in_generator(gen, val):
     return reduce(
-        lambda old,new: old or new == val,
+        lambda old, new: old or new == val,
         gen,
         False
     )
@@ -94,7 +99,7 @@ class MockDockerClient(object):
             exception = docker.client.APIError('bad', response)
             raise exception
 
-    def containers(self, *args, **kwargs): # pylint:disable=unused-argument
+    def containers(self, *args, **kwargs):  # pylint:disable=unused-argument
         return self.containers_return
 
 
@@ -192,7 +197,7 @@ class DictLookupTest(unittest.TestCase):
 class DockerMappingTest(unittest.TestCase):
 
     def setUp(self):
-        self.client  = MockDockerClient()
+        self.client = MockDockerClient()
         self.mapping = DockerMapping(self.client)
 
     #
@@ -296,8 +301,8 @@ class DockerMappingTest(unittest.TestCase):
 class DockerResolverTest(unittest.TestCase):
 
     def setUp(self):
-        self.client   = MockDockerClient()
-        self.mapping  = DockerMapping(self.client)
+        self.client = MockDockerClient()
+        self.mapping = DockerMapping(self.client)
         self.resolver = DockerResolver(self.mapping)
 
     #
