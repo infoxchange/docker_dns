@@ -2,4 +2,4 @@ twisted==12.0.0
 fudge==1.0.3
 pep8==1.4.6
 pylint==1.0.0
--e git+git://github.com/dotcloud/docker-py.git#egg=docker
+-e git+git://github.com/dotcloud/docker-py.git@6ca4bb79c1a542d5733181924f808f9964e56f18#egg=docker
