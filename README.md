@@ -18,14 +18,17 @@ For these examples, we have Docker containers like this:
     0949efde23bf        ubuntu:12.04        /bin/bash           18 hours ago        Up 18 hours
 
 0949efde23bf has:
+
  - ID: 0949efde23bf01727203638dafb0ac15b2e68db9effe03b90687d67a96ab6ee7
  - IP: 172.17.0.2
  - Hostname: 0949efde23bf
 
 26ed50b1bf59 has:
+
  - ID: 26ed50b1bf5947727bee4910f3d93674d823496c615940238219b5346cc0fc4e
  - IP: 172.17.0.3
  - Hostname: my-thing
+
 
     dig @localhost 0949efde23bf017.docker +noall +answer
     0949efde23bf017.docker.	10	IN	A	172.17.0.2
