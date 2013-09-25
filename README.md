@@ -85,8 +85,10 @@ Config is done in the `config.py` file. There's a skeleton in
 `config.py.sample`. Below are the default config values. Currently,
 configuration is rather limited.
 
-    'bind_port': 53,
-    'bind_protocols': ['tcp', 'udp'],
+    CONFIG = {
+        'bind_port': 53,
+        'bind_protocols': ['tcp', 'udp'],
+    }
 
 Contributing
 ------------
