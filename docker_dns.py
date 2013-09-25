@@ -18,6 +18,8 @@ Author: Ricky Cook <ricky@infoxchange.net.au>
 import docker
 import re
 
+from config import CONFIG
+
 from requests.exceptions import ConnectionError
 from twisted.application import internet, service
 from twisted.internet import defer
@@ -210,18 +212,32 @@ def main():
 
     # Create twistd stuff to tie in our custom components
     factory = server.DNSServerFactory(clients=[resolver])
-    proto = dns.DNSDatagramProtocol(factory)
-    factory.noisy = proto.noisy = False
+    factory.noisy = False
+
+    # Protocols to bind
+    bind_list = []
+    if 'tcp' in CONFIG['bind_protocols']:
+        bind_list.append((internet.TCPServer, factory))  # noqa pylint:disable=no-member
+
+    if 'udp' in CONFIG['bind_protocols']:
+        proto = dns.DNSDatagramProtocol(factory)
+        proto.noisy = False
+        bind_list.append((internet.UDPServer, proto))  # noqa pylint:disable=no-member
 
     # Register the service
     ret = service.MultiService()
-    bind_list = [(internet.TCPServer, factory), (internet.UDPServer, proto)]  # noqa pylint:disable=no-member
     for (klass, arg) in bind_list:
-        svc = klass(53, arg)
+        svc = klass(CONFIG['bind_port'], arg)
         svc.setServiceParent(ret)
 
     # DO IT NOW
     ret.setServiceParent(service.IServiceCollection(application))
+
+DEFAULT_CONFIG = {
+    'bind_port': 53,
+    'bind_protocols': ['tcp', 'udp'],
+}
+CONFIG = dict(DEFAULT_CONFIG.items() + CONFIG.items())
 
 application = service.Application('dnsserver', 1, 1)  # noqa pylint:disable=invalid-name
 main()

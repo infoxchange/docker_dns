@@ -1,4 +1,5 @@
 *.pyc
+config.py
 twistd.pid
 twistd.log
 build/
