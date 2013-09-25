@@ -374,8 +374,10 @@ class DockerResolverTest(unittest.TestCase):
 
     def test_lookupAddress_invalid(self):
         errored = []
-        def errback(*args):
+
+        def errback(*args):  # pylint:disable=unused-argument
             errored.append('yeah bro')
+
         deferred = self.resolver.lookupAddress('invalid')
         deferred.addErrback(errback)
         self.assertEqual(len(errored), 1)
