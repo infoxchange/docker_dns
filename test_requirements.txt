@@ -1,3 +1,4 @@
+-r requirements.txt
 fudge==1.0.3
 pep8==1.4.6
 pylint==1.0.0
