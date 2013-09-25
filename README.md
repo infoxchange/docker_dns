@@ -79,6 +79,15 @@ container:
 
     dig @localhost 26ed50b1bf59 +noall +answer
 
+Configuration
+-------------
+Config is done in the `config.py` file. There's a skeleton in
+`config.py.sample`. Below are the default config values. Currently,
+configuration is rather limited.
+
+    'bind_port': 53,
+    'bind_protocols': ['tcp', 'udp'],
+
 Contributing
 ------------
 All pull requests should 10/10 in pylint, have no PEP8 warnings and should
