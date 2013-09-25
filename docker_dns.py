@@ -203,6 +203,7 @@ def main():
     """
     Set everything up
     """
+
     # Create our custom mapping and resolver
     mapping = DockerMapping(docker.Client())
     resolver = DockerResolver(mapping)
