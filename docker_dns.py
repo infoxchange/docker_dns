@@ -27,6 +27,7 @@ from twisted.python import failure
 from warnings import warn
 
 
+# FIXME replace with a more generic solution like operator.attrgetter
 def dict_lookup(dic, key_path, default=None):
     """
     Look up value in a nested dict
