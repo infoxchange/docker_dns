@@ -1,6 +1,5 @@
 Docker DNS
 ==========
-[![Build Status](https://travis-ci.org/infoxchange/docker_dns.png?branch=master)](https://travis-ci.org/infoxchange/docker_dns)
 
 A simple Twisted DNS server using custom TLD and Docker as the back end for IP
 resolution.
