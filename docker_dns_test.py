@@ -373,8 +373,12 @@ class DockerResolverTest(unittest.TestCase):
         self.assertEqual(rec.payload.dottedQuad(), '8.8.8.8')
 
     def test_lookupAddress_invalid(self):
+        errored = []
+        def errback(*args):
+            errored.append('yeah bro')
         deferred = self.resolver.lookupAddress('invalid')
-        self.assertTrue(isinstance(deferred.result, Failure))
+        deferred.addErrback(errback)
+        self.assertEqual(len(errored), 1)
 
 
 def main():
