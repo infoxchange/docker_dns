@@ -18,8 +18,6 @@ Author: Ricky Cook <ricky@infoxchange.net.au>
 import docker
 import re
 
-from config import CONFIG
-
 from requests.exceptions import ConnectionError
 from twisted.application import internet, service
 from twisted.internet import defer
@@ -233,6 +231,13 @@ def main():
     # DO IT NOW
     ret.setServiceParent(service.IServiceCollection(application))
 
+# Load the config
+try:
+    from config import CONFIG
+except ImportError:
+    CONFIG = {}
+
+# Merge user config over defaults
 DEFAULT_CONFIG = {
     'bind_port': 53,
     'bind_protocols': ['tcp', 'udp'],
