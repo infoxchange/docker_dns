@@ -233,7 +233,7 @@ def main():
 
 # Load the config
 try:
-    from config import CONFIG
+    from config import CONFIG  # pylint:disable=no-name-in-module
 except ImportError:
     CONFIG = {}
 
