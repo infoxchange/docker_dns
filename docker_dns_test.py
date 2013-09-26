@@ -16,8 +16,7 @@ import fudge
 import itertools
 import unittest
 
-from docker_dns import (CONFIG,
-                        DEFAULT_CONFIG,
+from docker_dns import (DEFAULT_CONFIG,
                         dict_lookup,
                         DockerMapping,
                         DockerResolver)
