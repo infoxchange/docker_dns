@@ -199,6 +199,7 @@ class DockerResolver(common.ResolverBase):
         # stop responding
         except:  # pylint:disable=bare-except
             if CONFIG['no_nxdomain']:
+                # FIXME surely there's a better way to give SERVFAIL
                 exception = DNSQueryTimeoutError(name)
             else:
                 exception = DomainError(name)
