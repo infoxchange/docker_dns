@@ -47,37 +47,66 @@ For these examples, we have Docker containers like this:
 
 Container IDs are variable length. They can be long:
 
-    dig @localhost 0949efde23bf017.docker +noall +answer
-    0949efde23bf017.docker.	10	IN	A	172.17.0.2
+    dig 0949efde23bf017.docker
+    ;; Got answer:
+    ;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 51840
+    ;; flags: qr rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 0
+
+    ;; ANSWER SECTION:
+    0949efde23bf017.docker. 10  IN  A   172.17.0.2
+
 
 Or they can be short:
 
-    dig @localhost 0949.docker +noall +answer
+    dig 0949.docker
+    ;; Got answer:
+    ;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 42797
+    ;; flags: qr rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 0
+
+    ;; ANSWER SECTION:
     0949.docker.		10	IN	A	172.17.0.2
 
 And the other container:
 
-    dig @localhost 26ed50b1bf59.docker +noall +answer
+    dig 26ed50b1bf59.docker
+    ;; Got answer:
+    ;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 25901
+    ;; flags: qr rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 0
+
+    ;; ANSWER SECTION:
     26ed50b1bf59.docker.	10	IN	A	172.17.0.3
 
 When a container doesn't exist, no answer is given:
 
-    dig @localhost nothing.docker +noall +answer
+    dig nothing.docker
+    ;; Got answer:
+    ;; ->>HEADER<<- opcode: QUERY, status: SERVFAIL, id: 24269
+    ;; flags: qr rd ra; QUERY: 1, ANSWER: 0, AUTHORITY: 0, ADDITIONAL: 0
 
 You can look up by hostname by removing the .docker TLD:
 
-    dig @localhost 0949efde23bf +noall +answer
+    dig 0949efde23bf
+    ;; Got answer:
+    ;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 61822
+    ;; flags: qr rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 0
+
+    ;; ANSWER SECTION:
     0949efde23bf.		10	IN	A	172.17.0.2
 
 Here's a manually defined hostname:
 
-    dig @localhost my-thing +noall +answer
+    dig my-thing
+    ;; Got answer:
+    ;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 3355
+    ;; flags: qr rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 0
+
+    ;; ANSWER SECTION:
     my-thing.		10	IN	A	172.17.0.3
 
 And the host name that would have been automatically assigned for the above
 container:
 
-    dig @localhost 26ed50b1bf59 +noall +answer
+    dig 26ed50b1bf59
 
 Configuration
 -------------
