@@ -27,7 +27,7 @@ Dnsmasq.
 
 Examples
 --------
-For these examples, we have Docker containers like this:
+Dig output is shortened for brevity. We have Docker containers like this:
 
     ID                  IMAGE               COMMAND             CREATED             STATUS              PORTS
     26ed50b1bf59        ubuntu:12.04        /bin/bash           4 seconds ago       Up 4 seconds
