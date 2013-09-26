@@ -107,6 +107,9 @@ And the host name that would have been automatically assigned for the above
 container:
 
     dig 26ed50b1bf59
+    ;; Got answer:
+    ;; ->>HEADER<<- opcode: QUERY, status: SERVFAIL, id: 12687
+    ;; flags: qr rd ra; QUERY: 1, ANSWER: 0, AUTHORITY: 0, ADDITIONAL: 0
 
 Configuration
 -------------
