@@ -15,7 +15,7 @@ Install/Run
 
 Just install from requirements (in a virtualenv if you'd like)
 
-   pip install -r requirements.txt --use-mirrors
+    pip install -r requirements.txt --use-mirrors
 
 That's it! To run, just
 
