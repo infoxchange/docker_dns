@@ -14,9 +14,9 @@ import fudge
 import itertools
 import unittest
 
-from docker_dns import dict_lookup, DockerMapping, DockerResolver
+from docker_dns import dict_lookup, DockerMapping, DockerResolver, CONFIG
 from twisted.names import dns
-from twisted.names.error import DomainError
+from twisted.names.error import DNSQueryTimeoutError, DomainError
 from twisted.python.failure import Failure
 
 
@@ -399,6 +399,22 @@ class DockerResolverTest(unittest.TestCase):
 
         result = check_deferred(deferred, False)
         self.assertNotEqual(result, False)
+
+    def test_lookupAddress_invalid_nxdomain(self):
+        CONFIG['no_nxdomain'] = False
+        deferred = self.resolver.lookupAddress('invalid')
+
+        result = check_deferred(deferred, False)
+        self.assertNotEqual(result, False)
+        self.assertEqual(result.type, DomainError)
+
+    def test_lookupAddress_invalid_no_nxdomain(self):
+        CONFIG['no_nxdomain'] = True
+        deferred = self.resolver.lookupAddress('invalid')
+
+        result = check_deferred(deferred, False)
+        self.assertNotEqual(result, False)
+        self.assertEqual(result.type, DNSQueryTimeoutError)
 
 
 def main():

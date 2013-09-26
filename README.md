@@ -86,9 +86,16 @@ Config is done in the `config.py` file. There's a skeleton in
 configuration is rather limited.
 
     CONFIG = {
-        'bind_interface': '',             # socket.bind defaults to 0.0.0.0
+        # socket.bind defaults to 0.0.0.0
+        'bind_interface': '',
         'bind_port': 53,
         'bind_protocols': ['tcp', 'udp'],
+
+        # When the request matches no docker container, we should return
+        # NXDOMAIN, however the OS interprets this as "doesn't exist anywhere"
+        # so things like google.com fail. This will return SERVFAIL rather than
+        # NXDOMAIN so secondary DNS is used
+        'no_nxdomain': True,
     }
 
 Contributing

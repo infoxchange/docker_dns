@@ -22,7 +22,7 @@ from requests.exceptions import ConnectionError
 from twisted.application import internet, service
 from twisted.internet import defer
 from twisted.names import common, dns, server
-from twisted.names.error import DomainError
+from twisted.names.error import DNSQueryTimeoutError, DomainError
 from twisted.python import failure
 from warnings import warn
 
@@ -197,7 +197,12 @@ class DockerResolver(common.ResolverBase):
         # We need to catch everything. Uncaught exceptian will make the server
         # stop responding
         except:  # pylint:disable=bare-except
-            return defer.fail(failure.Failure(dns.DomainError(name)))
+            if CONFIG['no_nxdomain']:
+                exception = DNSQueryTimeoutError(name)
+            else:
+                exception = DomainError(name)
+
+            return defer.fail(failure.Failure(exception))
 
 
 def main():
@@ -226,7 +231,11 @@ def main():
     # Register the service
     ret = service.MultiService()
     for (klass, arg) in bind_list:
-        svc = klass(CONFIG['bind_port'], arg, interface=CONFIG['bind_interface'])
+        svc = klass(
+            CONFIG['bind_port'],
+            arg,
+            interface=CONFIG['bind_interface']
+        )
         svc.setServiceParent(ret)
 
     # DO IT NOW
@@ -243,6 +252,7 @@ DEFAULT_CONFIG = {
     'bind_interface': '',
     'bind_port': 53,
     'bind_protocols': ['tcp', 'udp'],
+    'no_nxdomain': True,
 }
 CONFIG = dict(DEFAULT_CONFIG.items() + CONFIG.items())
 
