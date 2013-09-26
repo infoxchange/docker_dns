@@ -40,6 +40,25 @@ def check_record(record, **kwargs):
 
     return True
 
+def check_deferred(deferred, success):
+    completed = []
+
+    def gimme_x_back(is_success):
+        def x_back(result):
+            completed.append((is_success, result))
+
+        return x_back
+
+    deferred.addCallbacks(gimme_x_back(True), gimme_x_back(False))
+    if len(completed) != 1:
+        return False
+
+    status, result = completed[0]
+    if status != success:
+        return False
+
+    return result
+
 
 class MockDockerClient(object):
     inspect_container_pandas = {
@@ -359,22 +378,9 @@ class DockerResolverTest(unittest.TestCase):
     def test_lookupAddress_id(self):
         deferred = self.resolver.lookupAddress('cidfoxes.docker')
 
-        completed = []
-        def errback(result):  # pylint:disable=unused-argument
-            completed.append(('na bro', result))
+        result = check_deferred(deferred, True)
+        self.assertNotEqual(result, False)
 
-        def callback(result):  # pylint:disable=unused-argument
-            completed.append(('yeah bro', result))
-
-        deferred.addErrback(errback)
-        deferred.addCallback(callback)
-
-        self.assertEqual(len(completed), 1)
-        completed = completed[0]
-
-        status, result = completed
-
-        self.assertEqual(status, 'yeah bro')
         self.assertEqual(len(result), 3)
         self.assertEqual(result[1], ())
         self.assertEqual(result[2], ())
@@ -389,14 +395,10 @@ class DockerResolverTest(unittest.TestCase):
         self.assertEqual(rec.payload.dottedQuad(), '8.8.8.8')
 
     def test_lookupAddress_invalid(self):
-        errored = []
-
-        def errback(*args):  # pylint:disable=unused-argument
-            errored.append('yeah bro')
-
         deferred = self.resolver.lookupAddress('invalid')
-        deferred.addErrback(errback)
-        self.assertEqual(len(errored), 1)
+
+        result = check_deferred(deferred, False)
+        self.assertNotEqual(result, False)
 
 
 def main():
