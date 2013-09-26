@@ -17,7 +17,6 @@ import unittest
 from docker_dns import dict_lookup, DockerMapping, DockerResolver, CONFIG
 from twisted.names import dns
 from twisted.names.error import DNSQueryTimeoutError, DomainError
-from twisted.python.failure import Failure
 
 
 # FIXME I can not believe how disgusting this is
@@ -39,6 +38,7 @@ def check_record(record, **kwargs):
             return False
 
     return True
+
 
 def check_deferred(deferred, success):
     completed = []
@@ -406,7 +406,7 @@ class DockerResolverTest(unittest.TestCase):
 
         result = check_deferred(deferred, False)
         self.assertNotEqual(result, False)
-        self.assertEqual(result.type, DomainError)
+        self.assertEqual(result.type, DomainError)  # noqa pylint:disable=maybe-no-member
 
     def test_lookupAddress_invalid_no_nxdomain(self):
         CONFIG['no_nxdomain'] = True
@@ -414,7 +414,7 @@ class DockerResolverTest(unittest.TestCase):
 
         result = check_deferred(deferred, False)
         self.assertNotEqual(result, False)
-        self.assertEqual(result.type, DNSQueryTimeoutError)
+        self.assertEqual(result.type, DNSQueryTimeoutError)  # noqa pylint:disable=maybe-no-member
 
 
 def main():
