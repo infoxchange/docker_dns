@@ -358,13 +358,29 @@ class DockerResolverTest(unittest.TestCase):
     #
     def test_lookupAddress_id(self):
         deferred = self.resolver.lookupAddress('cidfoxes.docker')
-        self.assertFalse(isinstance(deferred.result, Failure))
-        self.assertEqual(len(deferred.result), 3)
-        self.assertEqual(deferred.result[1], ())
-        self.assertEqual(deferred.result[2], ())
-        self.assertEqual(len(deferred.result[0]), 1)
 
-        rec = deferred.result[0][0]
+        completed = []
+        def errback(result):  # pylint:disable=unused-argument
+            completed.append(('na bro', result))
+
+        def callback(result):  # pylint:disable=unused-argument
+            completed.append(('yeah bro', result))
+
+        deferred.addErrback(errback)
+        deferred.addCallback(callback)
+
+        self.assertEqual(len(completed), 1)
+        completed = completed[0]
+
+        status, result = completed
+
+        self.assertEqual(status, 'yeah bro')
+        self.assertEqual(len(result), 3)
+        self.assertEqual(result[1], ())
+        self.assertEqual(result[2], ())
+        self.assertEqual(len(result[0]), 1)
+
+        rec = result[0][0]
         self.assertTrue(check_record(
             rec,
             name='cidfoxes.docker',
