@@ -193,7 +193,6 @@ class DockerResolver(common.ResolverBase):
     def lookupAddress(self, name, timeout=None):
         try:
             records = self._a_records(name)
-            print records
             return defer.succeed((records, (), ()))
 
         # We need to catch everything. Uncaught exceptian will make the server
