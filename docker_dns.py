@@ -18,7 +18,7 @@ Author: Ricky Cook <ricky@infoxchange.net.au>
 import docker
 import re
 
-from requests.exceptions import ConnectionError
+from requests.exceptions import RequestException
 from twisted.application import internet, service
 from twisted.internet import defer
 from twisted.names import common, dns, server
@@ -122,7 +122,7 @@ class DockerMapping(object):
 
             return None
 
-        except ConnectionError as ex:
+        except RequestException as ex:
             warn(ex)
             return None
 
@@ -212,8 +212,14 @@ def main():
     Set everything up
     """
 
+    # Create docker
+    if CONFIG['docker_url']:
+        docker_client = docker.Client(CONFIG['docker_url'])
+    else:
+        docker_client = docker.Client()
+
     # Create our custom mapping and resolver
-    mapping = DockerMapping(docker.Client())
+    mapping = DockerMapping(docker_client)
     resolver = DockerResolver(mapping)
 
     # Create twistd stuff to tie in our custom components
@@ -256,6 +262,7 @@ DEFAULT_CONFIG = {
     'bind_protocols': ['tcp', 'udp'],
     'no_nxdomain': True,
     'authoritive': True,
+    'docker_url': None,
 }
 CONFIG = dict(DEFAULT_CONFIG.items() + CONFIG.items())
 

@@ -118,6 +118,10 @@ Config is done in the `config.py` file. There's a skeleton in
 configuration is rather limited.
 
     CONFIG = {
+        # URL to connect to the Docker API. docker-py defaults to
+        # unix://var/run/docker.sock
+        'docker_url': None
+
         # socket.bind defaults to 0.0.0.0
         'bind_interface': '',
         'bind_port': 53,
