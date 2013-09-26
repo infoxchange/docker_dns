@@ -257,12 +257,12 @@ except ImportError:
 
 # Merge user config over defaults
 DEFAULT_CONFIG = {
+    'docker_url': None,
     'bind_interface': '',
     'bind_port': 53,
     'bind_protocols': ['tcp', 'udp'],
     'no_nxdomain': True,
     'authoritive': True,
-    'docker_url': None,
 }
 CONFIG = dict(DEFAULT_CONFIG.items() + CONFIG.items())
 
