@@ -226,7 +226,7 @@ def main():
     # Register the service
     ret = service.MultiService()
     for (klass, arg) in bind_list:
-        svc = klass(CONFIG['bind_port'], arg)
+        svc = klass(CONFIG['bind_port'], arg, interface=CONFIG['bind_interface'])
         svc.setServiceParent(ret)
 
     # DO IT NOW
@@ -240,6 +240,7 @@ except ImportError:
 
 # Merge user config over defaults
 DEFAULT_CONFIG = {
+    'bind_interface': '',
     'bind_port': 53,
     'bind_protocols': ['tcp', 'udp'],
 }

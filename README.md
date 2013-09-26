@@ -86,6 +86,7 @@ Config is done in the `config.py` file. There's a skeleton in
 configuration is rather limited.
 
     CONFIG = {
+        'bind_interface': '',             # socket.bind defaults to 0.0.0.0
         'bind_port': 53,
         'bind_protocols': ['tcp', 'udp'],
     }
