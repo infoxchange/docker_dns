@@ -135,6 +135,10 @@ configuration is rather limited.
 
 Contributing
 ------------
+There are plenty of FIXME comments dotted around the code. No list of feature
+ideas yet, but there is scope for big improvements to current simple
+functionality.
+
 All pull requests should 10/10 in pylint, have no PEP8 warnings and should
 include reasonable test coverage.
 
