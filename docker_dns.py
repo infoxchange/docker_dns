@@ -186,12 +186,14 @@ class DockerResolver(common.ResolverBase):
 
         return tuple([
             dns.RRHeader(name, dns.A, dns.IN, self.ttl,
-                         dns.Record_A(addr, self.ttl))
+                         dns.Record_A(addr, self.ttl),
+                         CONFIG['authoritive'])
         ])
 
     def lookupAddress(self, name, timeout=None):
         try:
             records = self._a_records(name)
+            print records
             return defer.succeed((records, (), ()))
 
         # We need to catch everything. Uncaught exceptian will make the server
@@ -253,6 +255,7 @@ DEFAULT_CONFIG = {
     'bind_port': 53,
     'bind_protocols': ['tcp', 'udp'],
     'no_nxdomain': True,
+    'authoritive': True,
 }
 CONFIG = dict(DEFAULT_CONFIG.items() + CONFIG.items())
 

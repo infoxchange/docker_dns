@@ -9,12 +9,18 @@ Author: Ricky Cook <ricky@infoxchange.net.au>
 # Do not care......
 # noqa pylint:disable=missing-docstring,too-many-public-methods,protected-access,invalid-name
 
+import docker_dns
+
 import docker
 import fudge
 import itertools
 import unittest
 
-from docker_dns import dict_lookup, DockerMapping, DockerResolver, CONFIG
+from docker_dns import (CONFIG,
+                        DEFAULT_CONFIG,
+                        dict_lookup,
+                        DockerMapping,
+                        DockerResolver)
 from twisted.names import dns
 from twisted.names.error import DNSQueryTimeoutError, DomainError
 
@@ -216,6 +222,7 @@ class DictLookupTest(unittest.TestCase):
 class DockerMappingTest(unittest.TestCase):
 
     def setUp(self):
+        docker_dns.CONFIG = DEFAULT_CONFIG
         self.client = MockDockerClient()
         self.mapping = DockerMapping(self.client)
 
@@ -320,6 +327,7 @@ class DockerMappingTest(unittest.TestCase):
 class DockerResolverTest(unittest.TestCase):
 
     def setUp(self):
+        docker_dns.CONFIG = DEFAULT_CONFIG
         self.client = MockDockerClient()
         self.mapping = DockerMapping(self.client)
         self.resolver = DockerResolver(self.mapping)
@@ -372,6 +380,32 @@ class DockerResolverTest(unittest.TestCase):
             ''
         )
 
+    def test__a_records_authoritive(self):
+        docker_dns.CONFIG['authoritive'] = True
+        rec = self.resolver._a_records('cidpandas.docker')
+        self.assertEqual(len(rec), 1)
+
+        rec = rec[0]
+        self.assertTrue(check_record(
+            rec,
+            name='cidpandas.docker',
+            type=dns.A,
+            auth=True,
+        ))
+
+    def test__a_records_non_authoritive(self):
+        docker_dns.CONFIG['authoritive'] = False
+        rec = self.resolver._a_records('cidpandas.docker')
+        self.assertEqual(len(rec), 1)
+
+        rec = rec[0]
+        self.assertTrue(check_record(
+            rec,
+            name='cidpandas.docker',
+            type=dns.A,
+            auth=False,
+        ))
+
     #
     # TEST lookupAddress
     #
@@ -401,7 +435,7 @@ class DockerResolverTest(unittest.TestCase):
         self.assertNotEqual(result, False)
 
     def test_lookupAddress_invalid_nxdomain(self):
-        CONFIG['no_nxdomain'] = False
+        docker_dns.CONFIG['no_nxdomain'] = False
         deferred = self.resolver.lookupAddress('invalid')
 
         result = check_deferred(deferred, False)
@@ -409,7 +443,7 @@ class DockerResolverTest(unittest.TestCase):
         self.assertEqual(result.type, DomainError)  # noqa pylint:disable=maybe-no-member
 
     def test_lookupAddress_invalid_no_nxdomain(self):
-        CONFIG['no_nxdomain'] = True
+        docker_dns.CONFIG['no_nxdomain'] = True
         deferred = self.resolver.lookupAddress('invalid')
 
         result = check_deferred(deferred, False)

@@ -128,6 +128,9 @@ configuration is rather limited.
         # so things like google.com fail. This will return SERVFAIL rather than
         # NXDOMAIN so secondary DNS is used
         'no_nxdomain': True,
+
+        # Makes successful requests authoritive
+        'authoritive': True,
     }
 
 Contributing
