@@ -15,7 +15,7 @@ Install/Run
 
 Just install from requirements (in a virtualenv if you'd like)
 
-   pip install -r requirements.txt --use-mirrors
+    pip install -r requirements.txt --use-mirrors
 
 That's it! To run, just
 
@@ -45,7 +45,7 @@ Dig output is shortened for brevity. We have Docker containers like this:
  - IP: 172.17.0.3
  - Hostname: my-thing
 
-Container IDs are variable length. They can be long:
+Container IDs are variable length. You use the same input as the Docker `inspect` command, so they can be long:
 
     dig 0949efde23bf017.docker
     ;; Got answer:
