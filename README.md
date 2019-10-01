@@ -1,3 +1,6 @@
+# This project is unmaintained and is not recommended for use.
+
+
 Docker DNS
 ==========
 [![Build Status](https://travis-ci.org/infoxchange/docker_dns.png?branch=master)](https://travis-ci.org/infoxchange/docker_dns)
